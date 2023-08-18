@@ -52,7 +52,7 @@ http.adornUrl = (actionName) => {
  */
 http.adornParams = (params = {}, openDefaultParams = true) => {
   var defaults = {
-    't': new Date().getTime()
+    't': new Date().getTime() //拼接当前时间，避免缓存
   }
   return openDefaultParams ? merge(defaults, params) : params
 }
