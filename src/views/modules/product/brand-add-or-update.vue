@@ -30,9 +30,9 @@
 </template>
 
 <script>
-import singleUpload from "@/components/upload/singleUpload";
+import SingleUpload from "@/components/upload/singleUpload";
 export default {
-  components: { singleUpload },
+  components: { SingleUpload },
   data() {
     return {
       visible: false,
