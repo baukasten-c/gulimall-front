@@ -66,7 +66,7 @@ export default {
       expandedKeys: [],
       dialogVisible: false,
       category: {
-        catId: null, //后端接口修改时用到id值
+        catId: null, // 后端接口修改时用到id值
         name: "",
         parentCid: 0,
         catLevel: 0,
@@ -75,7 +75,7 @@ export default {
         icon: null,
         productUnit: null,
       },
-      dialogType: "", //edit或add
+      dialogType: "", // edit或add
       title: "",
       pCid: [],
       updateNodes: new Map(),
@@ -91,20 +91,20 @@ export default {
         url: this.$http.adornUrl("/product/category/list/tree"),
         method: "get",
       }).then(({ data }) => {
-        //{data}表示从对象中解构出名为 data 的属性
+        // {data}表示从对象中解构出名为 data 的属性
         this.menus = data.data; //data.data即获取的三级菜单
       });
     },
-    //在展开菜单时记录其父菜单的ID到expandedKeys数组中
+    // 在展开菜单时记录其父菜单的ID到expandedKeys数组中
     handleNodeExpand(data) {
       if (data.catId && !this.expandedKeys.includes(data.catId)) {
         this.expandedKeys.push(data.catId);
       }
     },
-    //在菜单合并时从expandedKeys数组中移除相应的菜单ID
+    // 在菜单合并时从expandedKeys数组中移除相应的菜单ID
     handleNodeCollapse(data) {
       const index = this.expandedKeys.indexOf(data.catId);
-      //在expandedKeys数组中移除index位置的1个元素
+      // 在expandedKeys数组中移除index位置的1个元素
       this.expandedKeys.splice(index, 1);
     },
     submitData() {
@@ -118,12 +118,12 @@ export default {
       this.dialogType = "add";
       this.title = "添加分类";
       this.dialogVisible = true;
-      //表单清空
+      // 表单清空
       this.clear();
       this.category.parentCid = data.catId;
       this.category.catLevel = data.catLevel * 1 + 1; //data.catLevel * 1使数据由字符串转为数字
     },
-    //添加三级分类
+    // 添加三级分类
     addCategory() {
       this.$http({
         url: this.$http.adornUrl("/product/category/save"),
@@ -135,9 +135,9 @@ export default {
           message: "菜单添加成功!",
         });
         this.dialogVisible = false;
-        //刷新出新的菜单
+        // 刷新出新的菜单
         this.getMenus();
-        //设置需要默认展开的菜单
+        // 设置需要默认展开的菜单
         this.expandedKeys.push(data.catId);
       });
     },
@@ -145,7 +145,7 @@ export default {
       this.dialogType = "edit";
       this.title = "修改分类";
       this.dialogVisible = true;
-      //发送请求获取当前节点最新数据
+      // 发送请求获取当前节点最新数据
       this.$http({
         url: this.$http.adornUrl(`/product/category/info/${data.catId}`),
         method: "get",
@@ -153,9 +153,9 @@ export default {
         this.category = { ...data.data };
       });
     },
-    //修改三级分类
+    // 修改三级分类
     editCategory() {
-      //如果在edit()中只回显了catId,name,icon,productUnit四个数据，需要使用var {catId,name,icon,productUnit} = this.category;将它们抽取出来，否则其它数据会被默认值覆盖
+      // 如果在edit()中只回显了catId,name,icon,productUnit四个数据，需要使用var {catId,name,icon,productUnit} = this.category;将它们抽取出来，否则其它数据会被默认值覆盖
       this.$http({
         url: this.$http.adornUrl("/product/category/update"),
         method: "post",
@@ -166,13 +166,13 @@ export default {
           message: "菜单修改成功!",
         });
         this.dialogVisible = false;
-        //刷新出新的菜单
+        // 刷新出新的菜单
         this.getMenus();
-        //设置需要默认展开的菜单
+        // 设置需要默认展开的菜单
         this.expandedKeys.push(data.catId);
       });
     },
-    //清空表单数据
+    // 清空表单数据
     clear() {
       this.category.catId = null;
       this.category.name = "";
@@ -199,34 +199,34 @@ export default {
                 type: "success",
                 message: "菜单删除成功!",
               });
-              //刷新出新的菜单
+              // 刷新出新的菜单
               this.getMenus();
-              //设置需要默认展开的菜单
+              // 设置需要默认展开的菜单
               this.expandedKeys.push(data.parentCid);
             })
             .catch(() => {});
         })
         .catch(() => {});
     },
-    //判断是否可以拖动，draggingNode:被拖动的当前节点，dropNode:要插入的目标节点
+    // 判断是否可以拖动，draggingNode:被拖动的当前节点，dropNode:要插入的目标节点
     allowDrop(draggingNode, dropNode, type) {
-      //被拖动的当前节点的总层数
-      //const关键字表示这些变量是常量，即它们的值在声明后不可更改
+      // 被拖动的当前节点的总层数
+      // const关键字表示这些变量是常量，即它们的值在声明后不可更改
       const maxLevel = this.countNodeLevel(draggingNode);
-      //拖动层数=总层数-当前节点层数+1
+      // 拖动层数=总层数-当前节点层数+1
       const deep = Math.abs(maxLevel - draggingNode.level) + 1;
-      //拖动后的节点总层数不能大于3
+      // 拖动后的节点总层数不能大于3
       if (type == "inner") {
         return deep + dropNode.level <= 3;
       } else {
         return deep + dropNode.parent.level <= 3;
       }
     },
-    //遍历所有子节点，找总层数
+    // 遍历所有子节点，找总层数
     countNodeLevel(node) {
       let maxLevel = node.level;
       if (node.childNodes != null && node.childNodes.length > 0) {
-        //node.childNodes是Array数组
+        // node.childNodes是Array数组
         for (let i = 0; i < node.childNodes.length && maxLevel < 3; i++) {
           if (node.childNodes[i].level > maxLevel) {
             maxLevel = node.childNodes[i].level;
@@ -236,9 +236,9 @@ export default {
       }
       return maxLevel;
     },
-    //draggingNode:被拖动的当前节点，dropNode:结束拖动后进入的节点，dropType:被拖动节点的放置位置（before、after、inner）、event
+    // draggingNode:被拖动的当前节点，dropNode:结束拖动后进入的节点，dropType:被拖动节点的放置位置（before、after、inner）、event
     handleDrop(draggingNode, dropNode, dropType, ev) {
-      //获取当前节点最新的父节点id、同级节点
+      // 获取当前节点最新的父节点id、同级节点
       let pCid = 0;
       let siblings = [];
       if (dropType == "inner") {
@@ -249,16 +249,16 @@ export default {
         siblings = dropNode.parent.childNodes;
       }
       this.pCid.push(pCid);
-      //修改被拖动的当前的最新顺序
+      // 修改被拖动的当前的最新顺序
       for (let i = 0; i < siblings.length; i++) {
-        //如果遍历到被拖动的当前节点，还需要多修改层级和父节点id
+        // 如果遍历到被拖动的当前节点，还需要多修改层级和父节点id
         if (siblings[i].data.catId == draggingNode.data.catId) {
-          //定义catLevel为被拖动的当前节点的原始层级
+          // 定义catLevel为被拖动的当前节点的原始层级
           let catLevel = draggingNode.data.catLevel;
-          //被拖动的当前节点的层级发送变化
+          // 被拖动的当前节点的层级发送变化
           if (siblings[i].level != catLevel) {
             catLevel = siblings[i].level;
-            //修改被拖动的当前节点的子节级层次
+            // 修改被拖动的当前节点的子节级层次
             this.updateChildNodeLevel(siblings[i]);
           }
           this.updateNodes.set(siblings[i].data.catId, {
@@ -275,7 +275,7 @@ export default {
         }
       }
     },
-    //修改子节级层次
+    // 修改子节级层次
     updateChildNodeLevel(node) {
       for (let i = 0; i < node.childNodes.length; i++) {
         var cNode = node.childNodes[i];
@@ -297,20 +297,20 @@ export default {
           type: "success",
           message: "菜单顺序修改成功!",
         });
-        //刷新出新的菜单
+        // 刷新出新的菜单
         this.getMenus();
-        //设置需要默认展开的菜单
+        // 设置需要默认展开的菜单
         this.expandedKeys.push(this.pCid);
-        //清空
+        // 清空
         this.updateNodes = new Map();
         this.pCid = [];
       });
     },
     batchDelete() {
-      //this.$refs:用于访问模板中使用 ref 引用标识的元素或组件实例
-      //getCheckedKeys:若节点可被选择，则返回目前被选中的节点的 key 所组成的数组
+      // this.$refs:用于访问模板中使用 ref 引用标识的元素或组件实例
+      // getCheckedKeys:若节点可被选择，则返回目前被选中的节点的 key 所组成的数组
       let catIds = this.$refs.menuTree.getCheckedKeys();
-      //被选中的节点的 name 所组成的数组
+      // 被选中的节点的 name 所组成的数组
       let names = this.$refs.menuTree.getCheckedNodes().map((node) => node.name);
       let halfIds = this.$refs.menuTree.getHalfCheckedNodes();
       this.$confirm(`是否批量删除[${names}]菜单？`, "提示", {
@@ -329,9 +329,9 @@ export default {
                 type: "success",
                 message: "菜单删除成功!",
               });
-              //刷新出新的菜单
+              // 刷新出新的菜单
               this.getMenus();
-              //设置需要默认展开的菜单
+              // 设置需要默认展开的菜单
               this.expandedKeys.push(halfIds);
             })
             .catch(() => {});

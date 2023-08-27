@@ -45,9 +45,9 @@ export default {
       },
       categorys: [],
       props: {
-        value: "catId", //指定选项的值为选项对象的某个属性值
-        label: "name", //指定选项标签为选项对象的某个属性值
-        children: "children", //指定选项的子选项为选项对象的某个属性值
+        value: "catId", // 指定选项的值为选项对象的某个属性值
+        label: "name", // 指定选项标签为选项对象的某个属性值
+        children: "children", // 指定选项的子选项为选项对象的某个属性值
       },
       dataRule: {
         attrGroupName: [

@@ -12,9 +12,8 @@
           <el-form-item>
             <el-button @click="getDataList()">查询</el-button>
             <el-button type="success" @click="getAllDataList()">查询全部</el-button>
-            <el-button v-if="isAuth('product:attrgroup:save')" type="primary"
-              @click="addOrUpdateHandle()">新增</el-button>
-            <el-button v-if="isAuth('product:attrgroup:delete')" type="danger" @click="deleteHandle()"
+            <el-button v-if="isAuth('product:attr:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+            <el-button v-if="isAuth('product:attr:delete')" type="danger" @click="deleteHandle()"
               :disabled="dataListSelections.length <= 0">批量删除</el-button>
           </el-form-item>
         </el-form>
@@ -22,23 +21,53 @@
           style="width: 100%;">
           <el-table-column type="selection" header-align="center" align="center" width="50">
           </el-table-column>
-          <el-table-column prop="attrGroupId" header-align="center" align="center" label="分组id">
+          <el-table-column prop="attrId" header-align="center" align="center" label="属性id">
           </el-table-column>
-          <el-table-column prop="attrGroupName" header-align="center" align="center" label="组名">
+          <el-table-column prop="attrName" header-align="center" align="center" label="属性名">
           </el-table-column>
-          <el-table-column prop="sort" header-align="center" align="center" label="排序">
+          <el-table-column v-if="attrtype == 1" prop="searchType" header-align="center" align="center" label="可检索">
+            <template slot-scope="scope">
+              <i class="el-icon-success" v-if="scope.row.searchType==1"></i>
+              <i class="el-icon-error" v-else></i>
+            </template>
           </el-table-column>
-          <el-table-column prop="descript" header-align="center" align="center" label="描述">
+          <el-table-column prop="valueType" header-align="center" align="center" label="值类型">
+            <template slot-scope="scope">
+              <el-tag type="success" v-if="scope.row.valueType==0">单选</el-tag>
+              <el-tag v-else>多选</el-tag>
+            </template>
           </el-table-column>
-          <el-table-column prop="icon" header-align="center" align="center" label="组图标">
+          <el-table-column prop="icon" header-align="center" align="center" label="属性图标">
           </el-table-column>
-          <el-table-column prop="catelogId" header-align="center" align="center" label="所属分类id">
+          <el-table-column prop="valueSelect" header-align="center" align="center" label="可选值">
+            <template slot-scope="scope">
+              <el-tooltip placement="top">
+                <div slot="content">
+                  <span v-for="(i,index) in scope.row.valueSelect.split(';')" :key="index">{{i}}<br /></span>
+                </div>
+                <el-tag>{{scope.row.valueSelect.split(";")[0]+" ..."}}</el-tag>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+          <el-table-column prop="enable" header-align="center" align="center" label="启用">
+            <template slot-scope="scope">
+              <i class="el-icon-success" v-if="scope.row.enable==1"></i>
+              <i class="el-icon-error" v-else></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="catelogName" header-align="center" align="center" label="所属分类"></el-table-column>
+          <el-table-column v-if="attrtype == 1" prop="groupName" header-align="center" align="center"
+            label="所属分组"></el-table-column>
+          <el-table-column v-if="attrtype == 1" prop="showDesc" header-align="center" align="center" label="快速展示">
+            <template slot-scope="scope">
+              <i class="el-icon-success" v-if="scope.row.showDesc==1"></i>
+              <i class="el-icon-error" v-else></i>
+            </template>
           </el-table-column>
           <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
             <template slot-scope="scope">
-              <el-button type="text" size="small" @click="relationHandle(scope.row.attrGroupId)">关联</el-button>
-              <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.attrGroupId)">修改</el-button>
-              <el-button type="text" size="small" @click="deleteHandle(scope.row.attrGroupId)">删除</el-button>
+              <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.attrId)">修改</el-button>
+              <el-button type="text" size="small" @click="deleteHandle(scope.row.attrId)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -47,20 +76,23 @@
           layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
         <!-- 弹窗, 新增 / 修改 -->
-        <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
-        <!-- 修改关联关系 -->
-        <relation-update v-if="relationVisible" ref="relationUpdate" @refreshData="getDataList"></relation-update>
+        <add-or-update :type="attrtype" v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
       </div>
     </el-col>
   </el-row>
 </template>
 
 <script>
-import Category from "../common/category.vue";
-import AddOrUpdate from "./attrgroup-add-or-update";
-import RelationUpdate from "./attr-group-relation";
+import Category from "../common/category";
+import AddOrUpdate from "./attr-add-or-update";
 export default {
-  components: { Category, AddOrUpdate, RelationUpdate },
+  components: { Category, AddOrUpdate },
+  props: {
+    attrtype: {
+      type: Number,
+      default: 1
+    }
+  },
   data() {
     return {
       dataForm: {
@@ -74,7 +106,7 @@ export default {
       dataListSelections: [],
       addOrUpdateVisible: false,
       catId: 0,
-      relationVisible: false,
+      type: 1,
     };
   },
   activated() {
@@ -82,16 +114,9 @@ export default {
   },
   methods: {
     // 查询全部数据
-    getAllDataList() {
+    getAllDataList(){
       this.catId = 0;
       this.getDataList();
-    },
-    // 处理分组与属性的关联
-    relationHandle(groupId) {
-      this.relationVisible = true;
-      this.$nextTick(() => {
-        this.$refs.relationUpdate.init(groupId);
-      });
     },
     // 感知树节点被点击
     treeNodeClick(data, node, component) {
@@ -103,8 +128,9 @@ export default {
     // 获取数据列表
     getDataList() {
       this.dataListLoading = true;
+      let type = this.attrtype == 0 ? "sale" : "base";
       this.$http({
-        url: this.$http.adornUrl(`/product/attrgroup/list/${this.catId}`),
+        url: this.$http.adornUrl(`/product/attr/${type}/list/${this.catId}`),
         method: "get",
         params: this.$http.adornParams({
           page: this.pageIndex,
@@ -140,7 +166,6 @@ export default {
     // 新增 / 修改
     addOrUpdateHandle(id) {
       this.addOrUpdateVisible = true;
-      // $nextTick 是一个用来在 DOM 更新队列刷新之后执行回调函数的方法
       this.$nextTick(() => {
         this.$refs.addOrUpdate.init(id);
       });
@@ -150,7 +175,7 @@ export default {
       var ids = id
         ? [id]
         : this.dataListSelections.map((item) => {
-            return item.attrGroupId;
+            return item.attrId;
           });
       this.$confirm(
         `确定对[id=${ids.join(",")}]进行[${id ? "删除" : "批量删除"}]操作?`,
@@ -162,7 +187,7 @@ export default {
         }
       ).then(() => {
         this.$http({
-          url: this.$http.adornUrl("/product/attrgroup/delete"),
+          url: this.$http.adornUrl("/product/attr/delete"),
           method: "post",
           data: this.$http.adornData(ids, false),
         }).then(({ data }) => {
@@ -184,15 +209,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.el-row {
-  margin-bottom: 20px;
-}
-.el-row :last-child {
-  margin-bottom: 0;
-}
-.el-col {
-  border-radius: 4px;
-}
-</style>
