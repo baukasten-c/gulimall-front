@@ -6,7 +6,7 @@
         <el-input v-model="dataForm.attrName" placeholder="属性名"></el-input>
       </el-form-item>
       <el-row>
-        <el-col :span="12">
+        <el-col :span="8">
           <el-form-item label="属性类型" prop="attrType">
             <el-select v-model="dataForm.attrType" placeholder="请选择">
               <el-option label="规格参数" :value="1"></el-option>
@@ -14,9 +14,9 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="16">
           <el-form-item label="可选值列表" prop="valueSelect">
-            <el-select v-model="dataForm.valueSelect" multiple filterable allow-create placeholder="请输入内容"></el-select>
+            <el-select v-model="dataForm.valueSelect" multiple filterable allow-create placeholder="请输入内容" style="width:100%"></el-select>
           </el-form-item>
         </el-col>
       </el-row>
@@ -38,7 +38,7 @@
       </el-form-item>
       <el-row>
         <el-col :span="8">
-          <el-form-item label="需要检索" prop="searchType" v-if="type == 1">
+          <el-form-item label="可检索" prop="searchType" v-if="type == 1">
             <el-switch v-model="dataForm.searchType" active-color="#13ce66" inactive-color="#ff4949" :active-value="1"
               :inactive-value="0"></el-switch>
           </el-form-item>

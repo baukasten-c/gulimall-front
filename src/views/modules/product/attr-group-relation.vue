@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :close-on-click-modal="false" :visible.sync="visible" @closed="dialogClose">
+    <el-dialog :close-on-click-modal="false" :visible.sync="visible">
       <!-- 新建关联对话框 -->
       <el-dialog width="40%" title="选择属性" :visible.sync="innerVisible" append-to-body>
         <div>
