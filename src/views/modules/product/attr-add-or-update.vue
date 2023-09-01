@@ -6,15 +6,16 @@
         <el-input v-model="dataForm.attrName" placeholder="属性名"></el-input>
       </el-form-item>
       <el-row>
-        <el-col :span="8">
+        <el-col :span="9">
           <el-form-item label="属性类型" prop="attrType">
             <el-select v-model="dataForm.attrType" placeholder="请选择">
               <el-option label="规格参数" :value="1"></el-option>
               <el-option label="销售属性" :value="0"></el-option>
+              <el-option label="销售属性+基本属性" :value="2"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="16">
+        <el-col :span="15">
           <el-form-item label="可选值列表" prop="valueSelect">
             <el-select v-model="dataForm.valueSelect" multiple filterable allow-create placeholder="请输入内容" style="width:100%"></el-select>
           </el-form-item>
@@ -202,7 +203,6 @@ export default {
               this.$nextTick(() => {
                 this.dataForm.attrGroupId = data.attr.attrGroupId;
               });
-              console.log(this.dataForm)
             }
           });
         }
