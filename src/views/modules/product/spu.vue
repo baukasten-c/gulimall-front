@@ -16,7 +16,7 @@
               <el-option label="下架" :value="2"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="检索">
+          <el-form-item label="关键字">
             <el-input style="width:160px" v-model="dataForm.key" clearable></el-input>
           </el-form-item>
           <el-form-item>

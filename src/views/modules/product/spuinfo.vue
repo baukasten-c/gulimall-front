@@ -78,10 +78,9 @@ export default {
       });
     },
     attrUpdateShow(row) {
-      console.log(row);
       this.$router.push({
         path: "/product-attrupdate",
-        query: { spuId: row.id, catalogId: row.catalogId },
+        query: { spuId: row.id, catelogId: row.catelogId },
       });
     },
     // 获取数据列表
